@@ -40,7 +40,7 @@
   --sidebar-ring: oklch(0.708 0 0);
 
   /* Custom */
-  --neon-green: rgb(44,255,5);
+  --neon-green: rgb(0, 255, 92);
 }
 
 @theme inline {
@@ -90,6 +90,14 @@ body {
 
 body::selection {
   background-color: green;
+}
+
+.text-neon {
+  color: var(--neon-green);
+  text-shadow:
+    0 0 5px var(--neon-green),
+    0 0 10px var(--neon-green),
+    0 0 20px var(--neon-green);
 }
 
 .dark {

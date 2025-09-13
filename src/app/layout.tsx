@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Barlow, Exo_2, VT323 } from "next/font/google";
 import "./globals.css";
+import { QueryProvider } from "@/provider/tanstack-provider";
+import { Toaster } from "react-hot-toast";
 
 // Import font từ Google với weight
 const barlow = Barlow({
@@ -32,12 +34,49 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${barlow.variable} ${exo2.variable} ${vt323.variable} antialiased bg-black`}
-      >
-        {children}
-      </body>
-    </html>
+    <QueryProvider>
+      <html lang="en">
+        <body
+          className={`${barlow.variable} ${exo2.variable} ${vt323.variable} antialiased bg-black`}
+        >
+          {children}
+          <Toaster
+            position="top-center"
+            toastOptions={{
+              duration: 3000,
+              style: {
+                background: "#0a0a0a",
+                color: "#e5e5e5",
+                border: "1px solid #00ff5c",
+                boxShadow: "0 0 15px #00ff5c55",
+                fontFamily: "var(--font-exo2), sans-serif",
+              },
+              success: {
+                style: {
+                  border: "1px solid #00ff5c",
+                  color: "#00ff5c",
+                  boxShadow: "0 0 20px #00ff5c88",
+                },
+                iconTheme: {
+                  primary: "#00ff5c",
+                  secondary: "#0a0a0a",
+                },
+              },
+              error: {
+                style: {
+                  border: "1px solid #ff005c",
+                  color: "#ff005c",
+                  boxShadow: "0 0 20px #ff005c88",
+                },
+                iconTheme: {
+                  primary: "#ff005c",
+                  secondary: "#0a0a0a",
+                },
+              },
+            }}
+          />
+        </body>
+      </html>
+    </QueryProvider>
   );
 }

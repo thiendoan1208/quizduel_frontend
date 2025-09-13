@@ -3,16 +3,62 @@
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { createUser } from "@/service/user";
+import { userResponse } from "@/type/response-type";
+import { userInfo } from "@/type/user-type";
+import { useMutation } from "@tanstack/react-query";
+import { AxiosError } from "axios";
+import { CircleX } from "lucide-react";
 import Link from "next/link";
+import { useState } from "react";
+import toast from "react-hot-toast";
 
 function FormControl() {
+  const [userError, setUserError] = useState<boolean>(false);
+  const [userInfo, setUserInfo] = useState<userInfo>({
+    name: "",
+    save: false,
+    win: 0,
+    loss: 0,
+  });
+
+  const { mutate: createUserMutate } = useMutation({
+    mutationKey: ["createUser"],
+    mutationFn: (userInfo: userInfo) => {
+      return createUser(userInfo);
+    },
+    onError: (data: AxiosError<userResponse>) => {
+      if (data.response) {
+        toast.error(data.response.data.message);
+      } else {
+        toast.error(data.message);
+      }
+    },
+    onSuccess: (data) => {
+      toast(data.message);
+    },
+  });
+
+  const isValidate = () => {
+    const userNameRegex =
+      /^(?=.{8,20}$)(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._]+(?<![_.])$/;
+
+    if (!userNameRegex.test(userInfo.name)) {
+      setUserError(true);
+      return false;
+    } else {
+      setUserError(false);
+      return true;
+    }
+  };
+
   return (
     <div className="z-20 space-y-2 max-w-[500px] px-3 md:px-0">
       <div className="space-y-1 flex flex-col items-center">
         <h1 className="text-[2.5rem] font-bold leading-[1.1] tracking-wide text-white">
           Welcome
           <span
-            className="animate-blink-neon ml-2 text-(--neon-green) font-bold"
+            className="animate-blink-neon ml-2 font-bold text-neon"
             style={{
               fontFamily: "var(--font-exo2), sans-serif",
             }}
@@ -32,11 +78,31 @@ function FormControl() {
       <div className="space-y-4">
         <div className="relative">
           <Input
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                const isvalid = isValidate();
+                if (isvalid && !userError) {
+                  createUserMutate(userInfo);
+                }
+              }
+            }}
+            value={userInfo.name}
+            onChange={(e) => {
+              setUserInfo({ ...userInfo, name: e.target.value.trim() });
+            }}
             type="text"
             placeholder="Tạo username của riêng bạn..."
             className="border-2 focus-visible:border-2 focus-visible:border-green-700 backdrop-blur-[2px] w-full flex items-center justify-center gap-2 bg-white/5 hover:bg-white/10 text-white  border-white/10 rounded-full py-6 px-4 transition-colors"
           ></Input>
-          <button className="cursor-pointer absolute right-1.5 top-[8px] text-green-500 w-9 h-9 flex items-start justify-center rounded-full bg-white/10 hover:bg-white/20 transition-colors group overflow-hidden">
+          <button
+            onClick={() => {
+              const isvalid = isValidate();
+              if (isvalid && !userError) {
+                createUserMutate(userInfo);
+              }
+            }}
+            className="cursor-pointer absolute right-1.5 top-[8px] text-green-500 w-9 h-9 flex items-start justify-center rounded-full bg-white/10 hover:bg-white/20 transition-colors group overflow-hidden"
+          >
             <span className="relative w-full h-full block overflow-hidden -translate-y-[2px]">
               <span className="absolute inset-0 flex items-center justify-center transition-transform duration-300 group-hover:translate-x-full">
                 →
@@ -46,10 +112,31 @@ function FormControl() {
               </span>
             </span>
           </button>
+
+          <div
+            className={`text-red-500 space-y-1 ml-1 ${!userError && "hidden"}`}
+          >
+            <h1 className="text-lg">Username phải thỏa mãn các yêu cầu sau:</h1>
+            <ul className="ml-2 space-y-1">
+              <li className="flex gap-1">
+                <CircleX /> Độ dài trong khoảng 8-20 kí tự.
+              </li>
+              <li className="flex gap-1">
+                <CircleX /> Không có khoảng trắng.
+              </li>
+              <li className="flex gap-1">
+                <CircleX /> Chỉ bao gồm {`[a-z] [A-Z] [0-9]`}.
+              </li>
+            </ul>
+          </div>
         </div>
 
         <div className="flex items-center gap-3 pl-1">
           <Checkbox
+            checked={userInfo.save}
+            onCheckedChange={(checked) => {
+              setUserInfo({ ...userInfo, save: Boolean(checked) });
+            }}
             id="account"
             className="border-green-600 rounded-full border-2 size-5 data-[state=checked]:text-green-500"
           />
