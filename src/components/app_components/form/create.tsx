@@ -1,33 +1,30 @@
 "use client";
 
-import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { createUser } from "@/service/user";
-import { userResponse } from "@/type/response-type";
-import { userInfo } from "@/type/user-type";
+import { createUserResponse } from "@/type/response-type";
+import { userCreateForm } from "@/type/user-type";
 import { useMutation } from "@tanstack/react-query";
 import { AxiosError } from "axios";
-import { CircleX } from "lucide-react";
+import { CircleX, LoaderCircle } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import toast from "react-hot-toast";
 
-function FormControl() {
+function CreateUserForm() {
   const [userError, setUserError] = useState<boolean>(false);
-  const [userInfo, setUserInfo] = useState<userInfo>({
+  const [userCreateForm, setUserInfo] = useState<userCreateForm>({
     name: "",
-    save: false,
     win: 0,
     loss: 0,
   });
 
-  const { mutate: createUserMutate } = useMutation({
+  const { mutate: createUserMutate, isPending: creatingUser } = useMutation({
     mutationKey: ["createUser"],
-    mutationFn: (userInfo: userInfo) => {
-      return createUser(userInfo);
+    mutationFn: (userCreateForm: userCreateForm) => {
+      return createUser(userCreateForm);
     },
-    onError: (data: AxiosError<userResponse>) => {
+    onError: (data: AxiosError<createUserResponse>) => {
       if (data.response) {
         toast.error(data.response.data.message);
       } else {
@@ -35,15 +32,17 @@ function FormControl() {
       }
     },
     onSuccess: (data) => {
-      toast(data.message);
+      toast.success(data.message);
+      localStorage.setItem("popup", "true");
+      window.location.reload();
     },
   });
 
   const isValidate = () => {
     const userNameRegex =
-      /^(?=.{8,20}$)(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._]+(?<![_.])$/;
+      /^(?=.{5,15}$)(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._]+(?<![_.])$/;
 
-    if (!userNameRegex.test(userInfo.name)) {
+    if (!userNameRegex.test(userCreateForm.name)) {
       setUserError(true);
       return false;
     } else {
@@ -65,7 +64,6 @@ function FormControl() {
           >
             Player
           </span>
-          {/* Change theo tài khoản */}
         </h1>
         <p className="text-[1.2rem] md:text-[1.6rem] text-white/70 font-light">
           Tạo tài khoản đơn giản, chỉ cần username.
@@ -82,13 +80,14 @@ function FormControl() {
               if (e.key === "Enter") {
                 const isvalid = isValidate();
                 if (isvalid && !userError) {
-                  createUserMutate(userInfo);
+                  localStorage.removeItem("popup");
+                  createUserMutate(userCreateForm);
                 }
               }
             }}
-            value={userInfo.name}
+            value={userCreateForm.name}
             onChange={(e) => {
-              setUserInfo({ ...userInfo, name: e.target.value.trim() });
+              setUserInfo({ ...userCreateForm, name: e.target.value.trim() });
             }}
             type="text"
             placeholder="Tạo username của riêng bạn..."
@@ -98,28 +97,37 @@ function FormControl() {
             onClick={() => {
               const isvalid = isValidate();
               if (isvalid && !userError) {
-                createUserMutate(userInfo);
+                createUserMutate(userCreateForm);
               }
             }}
-            className="cursor-pointer absolute right-1.5 top-[8px] text-green-500 w-9 h-9 flex items-start justify-center rounded-full bg-white/10 hover:bg-white/20 transition-colors group overflow-hidden"
+            className={` ${
+              creatingUser ? "pointer-events-none" : ""
+            } cursor-pointer absolute right-1.5 top-[8px] text-green-500 w-9 h-9 flex items-start justify-center rounded-full bg-white/10 hover:bg-white/20 transition-colors group overflow-hidden`}
           >
-            <span className="relative w-full h-full block overflow-hidden -translate-y-[2px]">
-              <span className="absolute inset-0 flex items-center justify-center transition-transform duration-300 group-hover:translate-x-full">
-                →
-              </span>
-              <span className="absolute inset-0 flex items-center justify-center transition-transform duration-300 -translate-x-full group-hover:translate-x-0">
-                →
-              </span>
-            </span>
+            {creatingUser ? (
+              <div className="w-full h-full flex items-center justify-center">
+                <LoaderCircle className="animate-spin" />
+              </div>
+            ) : (
+              <>
+                <span className="relative w-full h-full block overflow-hidden -translate-y-[2px]">
+                  <span className="absolute inset-0 flex items-center justify-center transition-transform duration-300 group-hover:translate-x-full">
+                    →
+                  </span>
+                  <span className="absolute inset-0 flex items-center justify-center transition-transform duration-300 -translate-x-full group-hover:translate-x-0">
+                    →
+                  </span>
+                </span>
+              </>
+            )}
           </button>
-
           <div
             className={`text-red-500 space-y-1 ml-1 ${!userError && "hidden"}`}
           >
             <h1 className="text-lg">Username phải thỏa mãn các yêu cầu sau:</h1>
             <ul className="ml-2 space-y-1">
               <li className="flex gap-1">
-                <CircleX /> Độ dài trong khoảng 8-20 kí tự.
+                <CircleX /> Độ dài trong khoảng 5-15 kí tự.
               </li>
               <li className="flex gap-1">
                 <CircleX /> Không có khoảng trắng.
@@ -130,22 +138,16 @@ function FormControl() {
             </ul>
           </div>
         </div>
-
-        <div className="flex items-center gap-3 pl-1">
-          <Checkbox
-            checked={userInfo.save}
-            onCheckedChange={(checked) => {
-              setUserInfo({ ...userInfo, save: Boolean(checked) });
-            }}
-            id="account"
-            className="border-green-600 rounded-full border-2 size-5 data-[state=checked]:text-green-500"
-          />
-          <Label htmlFor="account" className="text-green-500 font-bold">
-            Lưu tài khoản.
-          </Label>
-        </div>
       </div>
-
+      <span className="text-md md:text-[16px] text-white/40">
+        Đã có tài khoản ?{" "}
+        <Link
+          href="/login"
+          className="underline text-green-500/40 hover:text-green-500 transition-colors"
+        >
+          Đăng nhập.
+        </Link>
+      </span>
       <div className="flex items-center gap-4">
         <div className="h-px bg-white/10 flex-1" />
         <span className="text-white/40 text-sm">more</span>
@@ -169,4 +171,4 @@ function FormControl() {
   );
 }
 
-export default FormControl;
+export default CreateUserForm;

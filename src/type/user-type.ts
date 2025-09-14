@@ -1,8 +1,21 @@
-type userInfo = {
+type userCreateForm = {
   name: string;
-  save: boolean;
   win: number;
   loss: number;
 };
 
-export type { userInfo };
+type userLoginForm = {
+  name: string;
+  loginSecret: string;
+};
+
+type User = {
+  _id: string;
+  name: string;
+  loginSecret: string;
+  win: number;
+  loss: number;
+  createDate: string;
+};
+
+export type { userCreateForm, userLoginForm, User };

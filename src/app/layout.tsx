@@ -3,6 +3,7 @@ import { Barlow, Exo_2, VT323 } from "next/font/google";
 import "./globals.css";
 import { QueryProvider } from "@/provider/tanstack-provider";
 import { Toaster } from "react-hot-toast";
+import { UserProvider } from "@/context/user";
 
 // Import font từ Google với weight
 const barlow = Barlow({
@@ -34,7 +35,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <QueryProvider>
+    <UserProvider>
+      <QueryProvider>
       <html lang="en">
         <body
           className={`${barlow.variable} ${exo2.variable} ${vt323.variable} antialiased bg-black`}
@@ -78,5 +80,6 @@ export default function RootLayout({
         </body>
       </html>
     </QueryProvider>
+    </UserProvider>
   );
 }

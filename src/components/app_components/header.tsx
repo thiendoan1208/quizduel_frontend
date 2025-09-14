@@ -12,6 +12,7 @@ function Header() {
           height={100}
           alt="QuizDuel Logo"
           className="size-14 select-none cursor-pointer"
+          priority
         />
         <span
           className="ml-2 text-2xl text-green-500 select-none cursor-pointer"
