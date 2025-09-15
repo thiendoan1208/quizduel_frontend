@@ -1,9 +1,7 @@
-type createUserResponse = {
+type userResponse = {
   success: boolean;
   message: string;
-  data: {
-    save: boolean;
-  };
+  data: null;
 };
 
 type loginUserResponse = {
@@ -27,4 +25,4 @@ type getUserResponse = {
   ];
 };
 
-export type { createUserResponse, getUserResponse, loginUserResponse };
+export type { userResponse, getUserResponse, loginUserResponse };

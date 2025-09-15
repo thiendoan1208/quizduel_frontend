@@ -2,7 +2,7 @@
 
 import { Input } from "@/components/ui/input";
 import { loginUser } from "@/service/user";
-import { loginUserResponse } from "@/type/response-type";
+import { userResponse } from "@/type/response-type";
 import { userLoginForm } from "@/type/user-type";
 import { useMutation } from "@tanstack/react-query";
 import { AxiosError } from "axios";
@@ -25,7 +25,7 @@ function LoginForm() {
     mutationFn: (userInfo: userLoginForm) => {
       return loginUser(userInfo);
     },
-    onError: (data: AxiosError<loginUserResponse>) => {
+    onError: (data: AxiosError<userResponse>) => {
       if (data.response) {
         toast.error(data.response.data.message);
       } else {

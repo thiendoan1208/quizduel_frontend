@@ -1,14 +1,10 @@
 import axios from "@/config/axios";
-import {
-  createUserResponse,
-  getUserResponse,
-  loginUserResponse,
-} from "@/type/response-type";
-import { User, userCreateForm, userLoginForm } from "@/type/user-type";
+import { getUserResponse, userResponse } from "@/type/response-type";
+import { userCreateForm, userLoginForm } from "@/type/user-type";
 
 const createUser = async (
   userCreateForm: userCreateForm
-): Promise<createUserResponse> => {
+): Promise<userResponse> => {
   try {
     const res = await axios.post("/api/user", userCreateForm);
     return res.data;
@@ -19,9 +15,18 @@ const createUser = async (
 
 const loginUser = async (
   userLoginForm: userLoginForm
-): Promise<loginUserResponse> => {
+): Promise<userResponse> => {
   try {
     const res = await axios.post("/api/user/login", userLoginForm);
+    return res.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+const logoutUser = async (): Promise<userResponse> => {
+  try {
+    const res = await axios.post("/api/user/logout");
     return res.data;
   } catch (error) {
     throw error;
@@ -37,10 +42,12 @@ const getUser = async (): Promise<getUserResponse> => {
   }
 };
 
-const deleteUser = async (userInfo: User) => {
+const deleteUser = async (username: string): Promise<userResponse> => {
   try {
     const res = await axios.delete("/api/user", {
-      params: userInfo,
+      params: {
+        username,
+      },
     });
 
     return res.data;
@@ -49,4 +56,4 @@ const deleteUser = async (userInfo: User) => {
   }
 };
 
-export { createUser, loginUser, getUser, deleteUser };
+export { createUser, loginUser, logoutUser, getUser, deleteUser };

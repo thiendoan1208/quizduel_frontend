@@ -2,7 +2,7 @@
 
 import { Input } from "@/components/ui/input";
 import { createUser } from "@/service/user";
-import { createUserResponse } from "@/type/response-type";
+import { userResponse } from "@/type/response-type";
 import { userCreateForm } from "@/type/user-type";
 import { useMutation } from "@tanstack/react-query";
 import { AxiosError } from "axios";
@@ -24,7 +24,7 @@ function CreateUserForm() {
     mutationFn: (userCreateForm: userCreateForm) => {
       return createUser(userCreateForm);
     },
-    onError: (data: AxiosError<createUserResponse>) => {
+    onError: (data: AxiosError<userResponse>) => {
       if (data.response) {
         toast.error(data.response.data.message);
       } else {
