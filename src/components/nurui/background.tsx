@@ -376,9 +376,7 @@ export const BackGround = ({ className, children }: BackGroundProps) => {
         className
       )}
     >
-      <div className="z-20 fixed w-full">
-        <Header />
-      </div>
+      
       <div className="absolute inset-0 z-0">
         {/* Initial canvas (forward animation) */}
         {initialCanvasVisible && (

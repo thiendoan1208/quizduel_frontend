@@ -1,5 +1,6 @@
 "use client";
 
+import { Copy } from "lucide-react";
 import { ArrowUpRight, Info } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -30,9 +31,10 @@ import toast from "react-hot-toast";
 import { useContext, useState } from "react";
 import { UserContext } from "@/context/user";
 
-function Header() {
+function Header({ loginSecret }: { loginSecret: string | undefined }) {
   const { user } = useContext(UserContext);
 
+  const [isSecretModal, setisSecretModal] = useState<boolean>(false);
   const [isLogoutModal, setisLogoutModal] = useState<boolean>(false);
   const [isDeleteModal, setisDeleteModal] = useState<boolean>(false);
 
@@ -115,104 +117,146 @@ function Header() {
           </div>
         </div>
 
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Info
-              onClick={() => {
-                setisLogoutModal(false);
-              }}
-              className="text-green-500/80 cursor-pointer"
-            />
-          </DropdownMenuTrigger>
-          <DropdownMenuContent
-            className="w-56 bg-black text-white border-green-500 -translate-x-3"
-            align="start"
-          >
-            <DropdownMenuLabel>Quản Lý</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              onClick={() => {
-                setisDeleteModal(true);
-              }}
-              className="text-red-500 font-bold mt-1 cursor-pointer"
+        <div className={`${loginSecret ? "block" : "hidden"}`}>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Info className="text-green-500/80 cursor-pointer size-7" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              className="w-56 bg-black text-white border-green-500 -translate-x-3"
+              align="start"
             >
-              <h1>Xóa tài khoản</h1>
-            </DropdownMenuItem>
+              <DropdownMenuLabel>Quản Lý</DropdownMenuLabel>
+              <DropdownMenuItem
+                onClick={() => {
+                  setisSecretModal(true);
+                }}
+                className="text-green-500 font-bold mt-1 cursor-pointer"
+              >
+                <h1>Mã đăng nhập</h1>
+              </DropdownMenuItem>
 
-            <DropdownMenuItem
-              onClick={() => {
-                setisLogoutModal(true);
-              }}
-              className="text-red-500 font-bold mt-1 cursor-pointer"
-            >
-              <h1>Đăng xuất</h1>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+              <DropdownMenuSeparator />
 
-        <AlertDialog open={isLogoutModal}>
-          <AlertDialogTrigger asChild></AlertDialogTrigger>
-          <AlertDialogContent className="bg-black border-green-500">
-            <AlertDialogHeader>
-              <AlertDialogTitle className="text-red-500">
-                Đăng xuất?
-              </AlertDialogTitle>
-              <AlertDialogDescription className="text-white">
-                Không thể hoàn tác hành động này.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel
+              <DropdownMenuItem
                 onClick={() => {
-                  setisLogoutModal(false);
+                  setisDeleteModal(true);
                 }}
+                className="text-red-500 font-bold mt-1 cursor-pointer"
               >
-                Cancel
-              </AlertDialogCancel>
-              <AlertDialogAction
-                className="bg-red-500 cursor-pointer"
-                onClick={() => {
-                  setisLogoutModal(false);
-                  logoutUserMutate();
-                }}
-              >
-                Continue
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
+                <h1>Xóa tài khoản</h1>
+              </DropdownMenuItem>
 
-        <AlertDialog open={isDeleteModal}>
-          <AlertDialogTrigger asChild></AlertDialogTrigger>
-          <AlertDialogContent className="bg-black border-green-500">
-            <AlertDialogHeader>
-              <AlertDialogTitle className="text-red-500">
-                Xóa tài khoản ?
-              </AlertDialogTitle>
-              <AlertDialogDescription className="text-white">
-                Không thể hoàn tác hành động này.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel
+              <DropdownMenuItem
                 onClick={() => {
-                  setisDeleteModal(false);
+                  setisLogoutModal(true);
                 }}
+                className="text-red-500 font-bold mt-1 cursor-pointer"
               >
-                Cancel
-              </AlertDialogCancel>
-              <AlertDialogAction
-                className="bg-red-500 cursor-pointer"
-                onClick={() => {
-                  setisDeleteModal(false);
-                  deleteUserMutate();
-                }}
-              >
-                Continue
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
+                <h1>Đăng xuất</h1>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          <AlertDialog open={isSecretModal}>
+            <AlertDialogContent className="bg-black border-green-500">
+              <AlertDialogHeader>
+                <AlertDialogTitle className="text-green-500">
+                  Mã đăng nhập
+                </AlertDialogTitle>
+                <AlertDialogDescription className="text-[16px] text-white/70">
+                  Đây là mã đăng nhập của bạn.
+                  <span className="w-full text-white flex justify-center items-center">
+                    {loginSecret}
+                    <Copy
+                      onClick={() => {
+                        if (loginSecret) {
+                          navigator.clipboard.writeText(loginSecret);
+                        }
+                        toast.success("Copied");
+                      }}
+                      className="ml-4 size-5 cursor-pointer"
+                    />
+                  </span>
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogAction
+                  className="bg-green-500 cursor-pointer"
+                  onClick={() => {
+                    setisSecretModal(false);
+                  }}
+                >
+                  Tiếp tục
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+
+          <AlertDialog open={isLogoutModal}>
+            <AlertDialogTrigger asChild></AlertDialogTrigger>
+            <AlertDialogContent className="bg-black border-green-500">
+              <AlertDialogHeader>
+                <AlertDialogTitle className="text-red-500">
+                  Đăng xuất?
+                </AlertDialogTitle>
+                <AlertDialogDescription className="text-white">
+                  Không thể hoàn tác hành động này.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel
+                  onClick={() => {
+                    setisLogoutModal(false);
+                  }}
+                >
+                  Quay lại
+                </AlertDialogCancel>
+                <AlertDialogAction
+                  className="bg-red-500 cursor-pointer"
+                  onClick={() => {
+                    setisLogoutModal(false);
+                    logoutUserMutate();
+                  }}
+                >
+                  Xác nhận
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+
+          <AlertDialog open={isDeleteModal}>
+            <AlertDialogTrigger asChild></AlertDialogTrigger>
+            <AlertDialogContent className="bg-black border-green-500">
+              <AlertDialogHeader>
+                <AlertDialogTitle className="text-red-500">
+                  Xóa tài khoản ?
+                </AlertDialogTitle>
+                <AlertDialogDescription className="text-white">
+                  Không thể hoàn tác hành động này.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel
+                  onClick={() => {
+                    setisDeleteModal(false);
+                  }}
+                >
+                  Quay lại
+                </AlertDialogCancel>
+                <AlertDialogAction
+                  className="bg-red-500 cursor-pointer"
+                  onClick={() => {
+                    setisDeleteModal(false);
+                    deleteUserMutate();
+                  }}
+                >
+                  Xác nhận
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </div>
       </div>
     </div>
   );
