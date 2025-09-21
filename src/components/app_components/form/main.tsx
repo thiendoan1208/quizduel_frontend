@@ -1,10 +1,14 @@
 "use client";
 
+import GameSetting from "@/components/app_components/form/game-setting";
 import HoverShadowButton from "@/components/nurui/shadow-button";
 import { Card } from "@/components/ui/card";
 import { User } from "@/type/user-type";
+import { useState } from "react";
 
 function UserMainForm({ user }: { user: User }) {
+  const [isGameSettingOpen, SetIsGameSettingOpen] = useState<boolean>(false);
+
   return (
     <div className="z-20 space-y-2 max-w-[500px] px-3 md:px-0">
       <div className="space-y-1 flex flex-col items-center">
@@ -56,9 +60,19 @@ function UserMainForm({ user }: { user: User }) {
           </Card>
         </div>
 
-        <div className="flex items-center justify-center mt-6">
+        <div
+          onClick={() => {
+            SetIsGameSettingOpen(true);
+          }}
+          className="flex items-center justify-center mt-6"
+        >
           <HoverShadowButton text={"Tìm Trận"} />
         </div>
+
+        <GameSetting
+          isOpen={isGameSettingOpen}
+          setIsOpen={SetIsGameSettingOpen}
+        />
       </div>
     </div>
   );
