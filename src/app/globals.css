@@ -176,4 +176,16 @@ body::selection {
     0%   { transform: scaleX(0); }
     100% { transform: scaleX(1); opacity: 1; }
   }
+
+@keyframes fade-glow {
+  0%, 100% {
+    opacity: 0.9; 
+  }
+  50% {
+    opacity: 1;  
+  }
+} 
+}
+.animate-fade-glow {
+  animation: fade-glow 3600s ease-in-out infinite;
 }

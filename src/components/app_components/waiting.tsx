@@ -2,14 +2,28 @@
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { cancelMatchMaking, checkEnoughUser } from "@/service/game/before-game";
-import { UserMatchInfo } from "@/type/game-type";
+import { MatchContext } from "@/context/match";
+import { UserContext } from "@/context/user";
+import {
+  addUserToMatch,
+  cancelMatchMaking,
+  checkEnoughUser,
+  deleteMatch,
+} from "@/service/game/before-game";
+import { EnoughUser, UserMatchInfo } from "@/type/game-type";
 import { useMutation } from "@tanstack/react-query";
 import { Hourglass } from "ldrs/react";
 import "ldrs/react/Hourglass.css";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import {
+  Dispatch,
+  SetStateAction,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 
-const CHECK_GAP_TIME = 5;
+const CHECK_GAP_TIME = 1;
 
 function Waiting({
   isWaiting,
@@ -20,6 +34,11 @@ function Waiting({
   setIsWaiting: Dispatch<SetStateAction<boolean>>;
   getUserMatchInfo: () => UserMatchInfo;
 }) {
+  const router = useRouter();
+
+  const { user } = useContext(UserContext);
+  const { matchInfo, setMatch } = useContext(MatchContext);
+
   const [count, setCount] = useState<number>(0);
 
   useEffect(() => {
@@ -50,21 +69,35 @@ function Waiting({
   useEffect(() => {
     const handleBeforeUnload = () => {
       const userInfo = getUserMatchInfo();
-      navigator.sendBeacon(
-        "http://localhost:4000/api/before-game/waiting-queue/cancel",
-        JSON.stringify(userInfo)
-      );
+      const userMatch = {
+        username: user.name,
+        matchID: matchInfo.matchID,
+      };
+      if (process.env.NEXT_PUBLIC_CANCEL_MATCH) {
+        navigator.sendBeacon(
+          process.env.NEXT_PUBLIC_CANCEL_MATCH,
+          JSON.stringify(userInfo)
+        );
+      }
+      if (process.env.NEXT_PUBLIC_DELETE_MATCH) {
+        navigator.sendBeacon(
+          process.env.NEXT_PUBLIC_DELETE_MATCH,
+          JSON.stringify(userMatch)
+        );
+      }
     };
 
     window.addEventListener("beforeunload", handleBeforeUnload);
     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
-  }, [getUserMatchInfo]);
+  }, [getUserMatchInfo, matchInfo.matchID, user.name]);
 
   const { mutate: checkEnoughUserMutate } = useMutation({
     mutationKey: ["checkEnoughUserMutate"],
     mutationFn: () => checkEnoughUser(),
     onSuccess: (data) => {
-      console.log(data);
+      if (data !== null) {
+        checkSuitableUser(data);
+      }
     },
   });
 
@@ -75,6 +108,41 @@ function Waiting({
       return cancelMatchMaking(userInfo);
     },
   });
+
+  const { mutate: addUserToMatchMutate } = useMutation({
+    mutationKey: ["addUserToMatchMutate"],
+    mutationFn: (username: string) => {
+      return addUserToMatch(username);
+    },
+    onSuccess: (data) => {
+      setMatch(data.data);
+      router.push("/match");
+    },
+  });
+
+  const { mutate: deleteMatchMutate } = useMutation({
+    mutationKey: ["deleteMatchMutate"],
+    mutationFn: (user: { username: string; matchID: string }) => {
+      return deleteMatch(user);
+    },
+  });
+
+  const checkSuitableUser = (data: EnoughUser) => {
+    const totalUserInWaitingQueue = data.data.numberOfUserIsWaiting.user;
+    const usernameInWaitingQueue = data.data.matchUsers.map(
+      (user) => user.userInfo.name
+    );
+
+    if (
+      usernameInWaitingQueue?.includes(user.name) &&
+      totalUserInWaitingQueue &&
+      totalUserInWaitingQueue >= 2
+    ) {
+      addUserToMatchMutate(user.name);
+    } else if (!usernameInWaitingQueue.includes(user.name)) {
+      addUserToMatchMutate(user.name);
+    }
+  };
 
   return (
     <div
@@ -94,6 +162,10 @@ function Waiting({
           onClick={() => {
             setIsWaiting(false);
             cancelMatchMutate();
+            deleteMatchMutate({
+              username: user.name,
+              matchID: matchInfo.matchID,
+            });
           }}
           className="w-full"
         >

@@ -29,7 +29,7 @@ export default function Home() {
     <BackGround>
       <>
         <div className="z-20 fixed w-full top-0">
-          <Header loginSecret={user && user?.data[0].loginSecret} />
+          <Header loginSecret={user && user?.data[0].loginSecret} place="main" />
         </div>
         <>
           {gettingUserInfo ? (

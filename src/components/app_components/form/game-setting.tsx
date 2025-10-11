@@ -409,14 +409,9 @@ function GameSetting({
             </div>
           </div>
 
-          <div>
+          <div onClick={handleFindMatch}>
             <Button className="w-full cursor-pointer">
-              <span
-                onClick={handleFindMatch}
-                className="text-xl font-bold text-green-500"
-              >
-                Xác nhận
-              </span>
+              <span className="text-xl font-bold text-green-500">Xác nhận</span>
             </Button>
           </div>
         </Card>

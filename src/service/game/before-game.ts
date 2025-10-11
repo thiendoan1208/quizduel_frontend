@@ -19,8 +19,6 @@ const addUserToWaitingQueue = async (
 const checkEnoughUser = async (): Promise<EnoughUser> => {
   try {
     const res = await axios.get("/api/before-game/waiting-queue");
-    console.log(res.data);
-
     return res.data;
   } catch (error) {
     throw error;
@@ -40,4 +38,31 @@ const cancelMatchMaking = async (
   }
 };
 
-export { addUserToWaitingQueue, checkEnoughUser, cancelMatchMaking };
+const addUserToMatch = async (username: string) => {
+  try {
+    const res = await axios.post("/api/before-game/match", { username });
+    return res.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+const deleteMatch = async (user: { username: string; matchID: string }) => {
+  try {
+    const res = await axios.delete("/api/before-game/match", {
+      data: user,
+    });
+
+    return res.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export {
+  addUserToWaitingQueue,
+  checkEnoughUser,
+  cancelMatchMaking,
+  addUserToMatch,
+  deleteMatch,
+};

@@ -12,8 +12,20 @@ type UserMatchInfo = {
 type EnoughUser = Pick<userResponse, "success" | "message"> & {
   data: {
     matchUsers: UserMatchInfo[];
-    numberOfUserIsWaiting: number;
+    numberOfUserIsWaiting: { success: boolean; user: number };
   };
 };
 
-export type { UserMatchInfo, EnoughUser };
+type MatchInfoResponse = Pick<userResponse, "success" | "message"> & {
+  data: {
+    matchID: string;
+    users: UserMatchInfo[];
+  };
+};
+
+type MatchInfo = {
+  matchID: string;
+  users: UserMatchInfo[];
+};
+
+export type { UserMatchInfo, EnoughUser, MatchInfo, MatchInfoResponse };

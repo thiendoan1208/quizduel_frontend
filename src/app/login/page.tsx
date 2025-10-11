@@ -10,7 +10,7 @@ export default function Home() {
       <BackGround>
         <>
           <div className="z-20 fixed w-full top-0">
-            <Header loginSecret={""} />
+            <Header loginSecret={""} place="" />
           </div>
           <LoginForm />
         </>
