@@ -1,6 +1,6 @@
 "use client";
 
-import Waiting from "@/components/app_components/waiting";
+import Waiting from "@/components/app_components/modal/waiting";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";

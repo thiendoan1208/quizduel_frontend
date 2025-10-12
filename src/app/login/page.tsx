@@ -2,7 +2,7 @@
 
 import { BackGround } from "@/components/nurui/background";
 import LoginForm from "@/components/app_components/form/login";
-import Header from "@/components/app_components/header";
+import Header from "@/components/app_components/nav/header";
 
 export default function Home() {
   return (

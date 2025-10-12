@@ -8,7 +8,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useContext } from "react";
 import { UserContext } from "@/context/user";
 import UserMainForm from "@/components/app_components/form/main";
-import Header from "@/components/app_components/header";
+import Header from "@/components/app_components/nav/header";
 
 export default function Home() {
   const { login } = useContext(UserContext);
@@ -29,7 +29,10 @@ export default function Home() {
     <BackGround>
       <>
         <div className="z-20 fixed w-full top-0">
-          <Header loginSecret={user && user?.data[0].loginSecret} place="main" />
+          <Header
+            loginSecret={user && user?.data[0].loginSecret}
+            place="main"
+          />
         </div>
         <>
           {gettingUserInfo ? (

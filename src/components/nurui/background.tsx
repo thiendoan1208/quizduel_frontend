@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 
 import * as THREE from "three";
-import Header from "@/components/app_components/header";
+import Header from "@/components/app_components/nav/header";
 
 type Uniforms = {
   [key: string]: {
@@ -376,7 +376,6 @@ export const BackGround = ({ className, children }: BackGroundProps) => {
         className
       )}
     >
-      
       <div className="absolute inset-0 z-0">
         {/* Initial canvas (forward animation) */}
         {initialCanvasVisible && (
