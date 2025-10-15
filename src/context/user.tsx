@@ -1,6 +1,6 @@
 "use client";
 
-import { User } from "@/type/user-type";
+import { MainUser } from "@/type/user-type";
 import { createContext, ReactElement, useState } from "react";
 
 const UserContext = createContext({
@@ -14,11 +14,11 @@ const UserContext = createContext({
   },
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  login: (userInfo: User) => {},
+  login: (userInfo: MainUser) => {},
 });
 
 function UserProvider({ children }: { children: ReactElement }) {
-  const [user, setUser] = useState<User>({
+  const [user, setUser] = useState<MainUser>({
     _id: "",
     name: "",
     loginSecret: "",
@@ -27,7 +27,7 @@ function UserProvider({ children }: { children: ReactElement }) {
     createDate: "",
   });
 
-  const login = (userInfo: User) => {
+  const login = (userInfo: MainUser) => {
     setUser(userInfo);
   };
 

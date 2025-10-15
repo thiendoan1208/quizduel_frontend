@@ -3,10 +3,10 @@
 import GameSetting from "@/components/app_components/form/game-setting";
 import HoverShadowButton from "@/components/nurui/shadow-button";
 import { Card } from "@/components/ui/card";
-import { User } from "@/type/user-type";
+import { MainUser } from "@/type/user-type";
 import { useState } from "react";
 
-function UserMainForm({ user }: { user: User }) {
+function UserMainForm({ user }: { user: MainUser }) {
   const [isGameSettingOpen, SetIsGameSettingOpen] = useState<boolean>(false);
 
   return (

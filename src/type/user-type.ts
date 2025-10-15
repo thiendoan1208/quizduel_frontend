@@ -9,7 +9,7 @@ type userLoginForm = {
   loginSecret: string;
 };
 
-type User = {
+type MainUser = {
   _id: string;
   name: string;
   loginSecret: string;
@@ -18,4 +18,4 @@ type User = {
   createDate: string;
 };
 
-export type { userCreateForm, userLoginForm, User };
+export type { userCreateForm, userLoginForm, MainUser };

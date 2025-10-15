@@ -28,4 +28,28 @@ type MatchInfo = {
   users: UserMatchInfo[];
 };
 
-export type { UserMatchInfo, EnoughUser, MatchInfo, MatchInfoResponse };
+type EachQues = {
+  success: boolean;
+  code: number;
+  message: string;
+  data: {
+    total: number;
+    questionNum: number,
+    question: {
+      question: string;
+      options: string[];
+      answer: string;
+      difficulty: string;
+      language: string;
+      topic: string;
+    };
+  };
+};
+
+export type {
+  UserMatchInfo,
+  EnoughUser,
+  MatchInfo,
+  MatchInfoResponse,
+  EachQues,
+};
